@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+    mdm:
+        build: .
+        image: hwind/hmdm
+        entrypoint: sleep
+        command: 6h
+        volumes: ['./content:/home/hmdmr']
+        ports:
+            - 8080:8080

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <!-- database configurations -->
+    <Parameter name="JDBC.driver"   value="org.postgresql.Driver"/>
+    <Parameter name="JDBC.url"      value="jdbc:postgresql://localhost:5432/hmdm"/>
+    <Parameter name="JDBC.username" value="hmdm"/>
+    <Parameter name="JDBC.password" value="topsecret"/>
+
+    <!-- This directory is used to store uploaded app files, must be accessible for tomcat user -->
+    <Parameter name="files.directory" value="/opt/hmdm/files"/>
+
+    <!-- URL used to open Headwind MDM control panel -->
+    <Parameter name="base.url" value="http://3.81.159.89:8080/hmdm"/>
+
+    <!-- private / shared; shared can be used only in Enterprise solution -->
+    <Parameter name="usage.scenario" value="private" />
+
+    <!-- A shared secret between mobile app and control panel. 
+         Don't change this unless you know what you're doing -->
+    <Parameter name="hash.secret" value="12345"/>
+
+    <!-- This directory is used to store files by plugins, must be accessible for tomcat user -->
+    <Parameter name="plugins.files.directory" value="/opt/hmdm/plugins"/>
+
+    <!-- Configuration for logging plugin, do not change this -->
+    <Parameter name="plugin.devicelog.persistence.config.class" value="com.hmdm.plugins.devicelog.persistence.postgres.DeviceLogPostgresPersistenceConfiguration"/>
+
+    <!-- Don't change this -->
+    <Parameter name="role.orgadmin.id" value="2"/>
+
+    <!-- Swagger Docs UI location -->
+    <Parameter name="swagger.host" value="3.81.159.89:8080"/>
+    <Parameter name="swagger.base.path" value="/hmdm/rest"/>
+
+    <Parameter name="initialization.completion.signal.file" value="/opt/hmdm/hmdm_install_flag"/>
+
+    <Parameter name="log4j.config" value="file:///opt/hmdm/log4j-hmdm.xml"/>
+
+    <Parameter name="aapt.command" value="aapt"/>
+
+    <!-- MQTT notification service parameters -->
+    <Parameter name="mqtt.server.uri" value="3.81.159.89:31000"/>
+</Context>

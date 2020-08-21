@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # Start postgres
 catalina.sh start
 service postgresql start

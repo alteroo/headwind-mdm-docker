@@ -1,1 +1,3 @@
 /docker-compose.override.yml
+hmdm-install/
+hmdm*.zip

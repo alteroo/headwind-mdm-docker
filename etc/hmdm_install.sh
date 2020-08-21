@@ -22,6 +22,9 @@ TEMP_DIRECTORY="/tmp"
 TEMP_SQL_FILE="$TEMP_DIRECTORY/hmdm_init.sql"
 TOMCAT_USER=$(ls -ld $TOMCAT_HOME/webapps | awk '{print $3}')
 
+LANGUAGE=en
+TOMCAT_HOME=/usr/local/tomcat
+
 
 if [ ! -z "$HMDM_SQL_HOST" ]; then
     SQL_HOST=$HMDM_SQL_HOST
@@ -52,8 +55,6 @@ if [ ! -z "$HMDM_SQL_PASS" ]; then
 else
     SQL_PASS=$DEFAULT_SQL_PASS
 fi
-LANGUAGE=en
-TOMCAT_HOME=/usr/local/tomcat
 
 # Check if we are root
 CURRENTUSER=$(whoami)

@@ -2,7 +2,8 @@
 
 # Start postgres
 catalina.sh start
-service postgresql start
+adb devices
+service postgresql restart
 
 # Create database if doesn't exist
 if [ $HMDM_SQL_USER != 'hmdm' ]; then
@@ -13,8 +14,6 @@ if [ $HMDM_SQL_BASE != 'hmdm' ]; then
     sudo -u postgres psql -c "CREATE DATABASE $HMDM_SQL_BASE WITH OWNER=$HMDM_SQL_USER;"
 fi
 
-adb devices
-
 if [ ! -f '/usr/local/tomcat/conf/Catalina/localhost//hmdm.xml' ]; then
     cd /home/hmdmr/hmdm-install/
     ./hmdm_install.sh
@@ -24,3 +23,4 @@ catalina.sh stop
 sleep 30
 cd ..
 catalina.sh run
+

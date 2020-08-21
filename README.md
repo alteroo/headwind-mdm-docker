@@ -21,8 +21,6 @@ docker-compose up -d
 - **HMDM_SQL_USER**: PostgreSQL username (Default: hmdm)
 - **HMDM_SQL_PASS**: PostgreSQL password
 - **HMDM_LANGUAGE**: Language (Default: en)
-- **HMDM_TOMCAT_HOST**: Tomcat host (Default: localhost)
-- **HMDM_TOMCAT_PORT**: Tomcat Port (Default: 8080)
 - **HMDM_TOMCAT_PORTOCOL**: Tomcat HTTP Portocol (Options: http | https) (Default: http)
 
 ## Features

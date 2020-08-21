@@ -15,16 +15,16 @@ docker-compose up -d
 
 #### Available environmental variables
 
-- *HMDM_SQL_HOST*: PostgreSQL host (IP or URL) (Default: localhost)
-- *HMDM_SQL_PORT*: PostgreSQL port (Default: 5432)
-- *HMDM_SQL_BASE*: PostgreSQL database (Default: hmdm)
-- *HMDM_SQL_USER*: PostgreSQL username (Default: hmdm)
-- *HMDM_SQL_PASS*: PostgreSQL password
-- *HMDM_LANGUAGE*: Language (Default: en)
-- *HMDM_TOMCAT_HOST*: Tomcat host (Default: localhost)
-- *HMDM_TOMCAT_PORT*: Tomcat Port (Default: 8080)
-- *HMDM_TOMCAT_PORTOCOL*: Tomcat HTTP Portocol (Options: http | https) (Default: http)
-- *HMDM_TOMCAT_DOMAIN*: Tomcat Domain that it will be serving on (Default: 0.0.0.0)
+- **HMDM_SQL_HOST**: PostgreSQL host (IP or URL) (Default: localhost)
+- **HMDM_SQL_PORT**: PostgreSQL port (Default: 5432)
+- **HMDM_SQL_BASE**: PostgreSQL database (Default: hmdm)
+- **HMDM_SQL_USER**: PostgreSQL username (Default: hmdm)
+- **HMDM_SQL_PASS**: PostgreSQL password
+- **HMDM_LANGUAGE**: Language (Default: en)
+- **HMDM_TOMCAT_HOST**: Tomcat host (Default: localhost)
+- **HMDM_TOMCAT_PORT**: Tomcat Port (Default: 8080)
+- **HMDM_TOMCAT_PORTOCOL**: Tomcat HTTP Portocol (Options: http | https) (Default: http)
+- **HMDM_TOMCAT_DOMAIN**: Tomcat Domain that it will be serving on (Default: 0.0.0.0)
 
 ## Features
 

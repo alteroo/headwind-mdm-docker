@@ -24,7 +24,6 @@ docker-compose up -d
 - **HMDM_TOMCAT_HOST**: Tomcat host (Default: localhost)
 - **HMDM_TOMCAT_PORT**: Tomcat Port (Default: 8080)
 - **HMDM_TOMCAT_PORTOCOL**: Tomcat HTTP Portocol (Options: http | https) (Default: http)
-- **HMDM_TOMCAT_DOMAIN**: Tomcat Domain that it will be serving on (Default: 0.0.0.0)
 
 ## Features
 

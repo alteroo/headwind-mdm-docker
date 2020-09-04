@@ -1,4 +1,4 @@
-# FROM ubuntu:18.04
+FROM ubuntu:18.04
 FROM tomcat:8.5.57-jdk8-openjdk-buster
 
 ARG SQL_PASS=Q1XIpOTkWU9Z

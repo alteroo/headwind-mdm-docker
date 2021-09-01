@@ -3,15 +3,17 @@
 # Headwind MDM installer script
 # Tested on Ubuntu Linux 18.04 LTS, 19.10
 #
+HMDM_INSTALLED_ID=$HMDM_VERSION:$HMDM_CLIENT_VERSION
+HMDM_INSTALLED_VERSIONS_FILE=/installed_versions
+if [ "$HMDM_INSTALLED_ID" == "$(cat $HMDM_INSTALLED_VERSIONS_FILE)" ] ;then
+    echo Version already initialised
+    exit 1
+fi
+
 REPOSITORY_BASE=https://h-mdm.com/files
-CLIENT_VERSION=3.35
-DEFAULT_SQL_HOST=localhost
-DEFAULT_SQL_PORT=5432
-DEFAULT_SQL_BASE=hmdm
-DEFAULT_SQL_USER=hmdm
-DEFAULT_SQL_PASS='topsecret'
+TOMCAT_HOME=/usr/local/tomcat
+CLIENT_VERSION=$HMDM_CLIENT_VERSION
 DEFAULT_LOCATION="/opt/hmdm"
-TOMCAT_HOME=$(ls -d /var/lib/tomcat* | tail -n1)
 TOMCAT_ENGINE="Catalina"
 TOMCAT_HOST="localhost"
 DEFAULT_PROTOCOL=http
@@ -19,45 +21,34 @@ DEFAULT_BASE_DOMAIN="0.0.0.0"
 DEFAULT_BASE_PATH="/hmdm"
 DEFAULT_PORT="8080"
 TEMP_DIRECTORY="/tmp"
-TEMP_SQL_FILE="$TEMP_DIRECTORY/hmdm_init.sql"
+TEMP_SQL_FILE="$TEMP_DIRECTORY/tmp.sql"
 TOMCAT_USER=$(ls -ld $TOMCAT_HOME/webapps | awk '{print $3}')
 
-LANGUAGE=en
-TOMCAT_HOME=/usr/local/tomcat
 
+LANGUAGE=${HMDM_LANGUAGE:-en}
+SQL_HOST=${HMDM_SQL_HOST:-localhost}
+SQL_PORT=${HMDM_SQL_PORT:-5432}
+SQL_BASE=${HMDM_SQL_DB:-hmdm}
+SQL_USER=${HMDM_SQL_USER:-hmdm}
+SQL_PASS=${HMDM_SQL_PASSWORD:-topsecret}
 
-if [ ! -z "$HMDM_SQL_HOST" ]; then
-    SQL_HOST=$HMDM_SQL_HOST
-else
-    SQL_HOST=$DEFAULT_SQL_HOST
+PROTOCOL=${HMDM_TOMTCAT_PORTOCOL:-$DEFAULT_PROTOCOL}
+BASE_DOMAIN=${HMDM_BASE_DOMAIN:-$DEFAULT_BASEDOMAIN}
+PORT=${HMDM_PORT:-$DEFAULT_PORT}
+
+BASE_PATH="${HMDM_BASE_PATH:-DEFAULT_BASE_PATH}"
+TOMCAT_DEPLOY_PATH=$BASE_PATH
+if [ "$HMDM_PORT" == "SAME" ]; then
+    PORT=""
 fi
-
-if [ ! -z "$HMDM_SQL_PORT" ]; then
-    SQL_PORT=$HMDM_SQL_PORT
-else
-    SQL_PORT=$DEFAULT_SQL_PORT
+if [ "$BASE_PATH" == "ROOT" ]; then
+    BASE_PATH=""
 fi
-
-if [ ! -z "$HMDM_SQL_BASE" ]; then
-    SQL_BASE=$HMDM_SQL_BASE
-else
-    SQL_BASE=$DEFAULT_SQL_BASE
-fi
-
-
-if [ ! -z "$HMDM_SQL_USER" ]; then
-    SQL_USER=$HMDM_SQL_USER
-else
-    SQL_USER=$DEFAULT_SQL_USER
-fi
-if [ ! -z "$HMDM_SQL_PASS" ]; then
-    SQL_PASS=$HMDM_SQL_PASS
-else
-    SQL_PASS=$DEFAULT_SQL_PASS
-fi
+BASE_HOST="$HMDM_BASE_DOMAIN:$PORT"
 
 # Check if we are root
 CURRENTUSER=$(whoami)
+
 if [[ "$EUID" -ne 0 ]]; then
     echo "It is recommended to run the installer script as root."
     read -p "Proceed as $CURRENTUSER (Y/n)? " -n 1 -r
@@ -122,7 +113,6 @@ fi
 #fi
 
 CLIENT_APK="hmdm-$CLIENT_VERSION-$CLIENT_VARIANT.apk"
-LANGUAGE="$DEFAULT_HMDM_LANGUAGE"
 
 echo "PostgreSQL database setup"
 echo "========================="
@@ -178,40 +168,6 @@ echo "Please assign a public domain name to this server"
 echo
 
 
-if [ ! -z "$HMDM_TOMTCAT_PORTOCOL" ]; then
-    PROTOCOL=$HMDM_TOMTCAT_PORTOCOL
-else
-    PROTOCOL=$DEFAULT_PROTOCOL
-fi
-if [ ! -z "$HMDM_BASE_DOMAIN" ]; then
-    BASE_DOMAIN=$HMDM_BASE_DOMAIN
-else
-    BASE_DOMAIN=$DEFAULT_BASE_DOMAIN
-fi
-if [ ! -z "$HMDM_BASE_DOMAIN" ]; then
-    BASE_DOMAIN=$HMDM_BASE_DOMAIN
-else
-    BASE_DOMAIN=$DEFAULT_BASE_DOMAIN
-fi
-PORT=$DEFAULT_PORT
-
-# Set the default URL path.
-if [ ! -z "$HMDM_BASE_PATH" ]; then
-    BASE_PATH=$HMDM_BASE_PATH
-else
-    BASE_PATH=$DEFAULT_BASE_PATH
-fi
-
-TOMCAT_DEPLOY_PATH=$BASE_PATH
-if [ "$BASE_PATH" == "ROOT" ]; then
-    BASE_PATH=""
-fi 
-
-if [[ ! -z "$HMDM_BASE_DOMAIN" ]]; then
-    BASE_HOST="$HMDM_BASE_DOMAIN:$PORT"
-else
-    BASE_HOST="$BASE_DOMAIN:$PORT"
-fi
 
 echo
 echo "Ready to install!"
@@ -243,7 +199,7 @@ if [ "$?" -ne 0 ]; then
     echo "Failed to create a Tomcat config file $TOMCAT_CONFIG_PATH/$TOMCAT_DEPLOY_PATH.xml!"
     exit 1
 fi 
-echo "Tomcat config file created: $TOMCAT_CONFIG_PATH/$TOMCAT_DEPLOY_PATH.xml"
+
 chmod 644 $TOMCAT_CONFIG_PATH/$TOMCAT_DEPLOY_PATH.xml
 
 echo "Deploying $SERVER_WAR to Tomcat: $TOMCAT_HOME/webapps/$TOMCAT_DEPLOY_PATH.war"
@@ -251,7 +207,9 @@ rm -f $INSTALL_FLAG_FILE > /dev/null 2>&1
 cp $SERVER_WAR $TOMCAT_HOME/webapps/$TOMCAT_DEPLOY_PATH.war
 chmod 644 $TOMCAT_HOME/webapps/$TOMCAT_DEPLOY_PATH.war
 
-# Waiting until the end of deployment
+echo Waiting until the end of deployment
+catalina.sh start
+sleep 10
 SUCCESSFUL_DEPLOY=0
 for i in {1..120}; do
     if [ -f $INSTALL_FLAG_FILE ]; then
@@ -266,12 +224,14 @@ for i in {1..120}; do
     sleep 1
 done
 echo
+killall java
 rm -f $INSTALL_FLAG_FILE > /dev/null 2>&1
 if [ $SUCCESSFUL_DEPLOY -ne 1 ]; then
     echo "ERROR: failed to deploy WAR file!"
     echo "Please check $TOMCAT_HOME/logs/catalina.out for details."
     exit 1
 fi
+
 echo "Deployment successful, initializing the database..."
 
 # Initialize database
@@ -290,5 +250,21 @@ echo "Headwind MDM has been installed!"
 echo "To continue, open in your web browser:"
 echo "$PROTOCOL://$BASE_HOST$BASE_PATH"
 echo "Login: admin:admin"
+
+
+echo "UPDATE applicationversions SET url=REPLACE(url, '$PROTOCOL://$BASE_HOST$BASE_PATH', 'https://h-mdm.com') WHERE url IS NOT NULL" | psql $PSQL_CONNSTRING >/dev/null 2>&1
+FILES=$(echo "SELECT url FROM applicationversions WHERE url IS NOT NULL" | psql $PSQL_CONNSTRING 2>/dev/null | tail -n +3 | head -n -2)
+CURRENT_DIR=$(pwd)
+cd $LOCATION/files
+for FILE in $FILES; do
+    echo "Downloading $FILE..."
+    wget $FILE
+done
+chown $TOMCAT_USER:$TOMCAT_USER *
+echo "UPDATE applicationversions SET url=REPLACE(url, 'https://h-mdm.com', '$PROTOCOL://$BASE_HOST$BASE_PATH') WHERE url IS NOT NULL" | psql $PSQL_CONNSTRING >/dev/null 2>&1
+cd $CURRENT_DIR
+
+
+echo $HMDM_INSTALLED_ID > ${HMDM_INSTALLED_VERSIONS_FILE}
 
 exit 1

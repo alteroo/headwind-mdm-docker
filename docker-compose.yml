@@ -1,7 +1,33 @@
-version: '3.7'
+version: "3.7"
 
 services:
-    mdm:
-        image: hwind/hmdm
-        ports:
-            - 8080:8080
+  db:
+    image: postgres
+    environment:
+      POSTGRES_USER: hmdm
+      POSTGRES_PASSWORD: hmdm
+      POSTGRES_DB: hmdm
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  mdm:
+    image: hmdm
+    build:
+      dockerfile: .
+      context: .
+    ports:
+      - 80:80
+      - 18830:31000
+    environment:
+      HMDM_SQL_HOST: db
+      HMDM_SQL_USER: hmdm
+      HMDM_SQL_PASSWORD: hmdm
+      HMDM_BASE_PATH: ROOT
+      HMDM_BASE_DOMAIN: desk-pc.lan
+      HMDM_PORT: SAME
+      HMDM_SQL_DB: hmdm
+    depends_on:
+      - db
+
+volumes:
+  db-data:

@@ -7,7 +7,7 @@ Headwind MDM is a Mobile Device Management platform for Android devices, designe
 
 [https://h-mdm.com](https://h-mdm.com)
 
-## RUnning the Docker Container
+## Running the Docker Container
 
 ```
 docker-compose up -d

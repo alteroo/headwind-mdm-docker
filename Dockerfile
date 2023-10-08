@@ -20,8 +20,8 @@ WORKDIR /home/hmdmr
 RUN apt-get update -y
 RUN apt-get install android-tools-adb android-tools-fastboot postgresql -y
 RUN apt install aapt wget unzip sudo -y
-RUN wget https://h-mdm.com/files/hmdm-3.23-install-ubuntu.zip
-RUN unzip hmdm-3.23-install-ubuntu.zip
+RUN wget https://h-mdm.com/files/hmdm-5.21-install-ubuntu.zip
+RUN unzip hmdm-5.21-install-ubuntu.zip
 
 COPY etc/docker-entrypoint.sh /hmdm-entrypoint.sh
 COPY etc/hmdm_install.sh /home/hmdmr/hmdm-install/
